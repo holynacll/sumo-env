@@ -1,0 +1,11 @@
+<configuration>
+  <input>
+    <net-file value="my_sumo_net.net.xml"/>
+    <route-files value="odtrips.rou.xml"/>
+    <additional-files value="my_sumo_net.poly.xml,TAZ.xml"/>
+  </input>
+  <time>
+    <begin value="0"/>
+    <end value="10000"/>
+  </time>
+</configuration>
