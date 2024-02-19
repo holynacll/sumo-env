@@ -1,34 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- generated on 2024-02-04 23:10:15.617593 by randomTrips.py UNKNOWN
+<!-- generated on 2024-02-10 18:23:06.223178 by randomTrips.py UNKNOWN
 <configuration>
     <net-file value="my_sumo_net.net.xml"/>
     <output-trip-file value="odtrips.xml"/>
-    <end value="1000.0"/>
+    <end value="1.0"/>
     <period value="1.0"/>
     <flows value="20"/>
 </configuration>
 -->
 
 <routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
-    <flow id="0" begin="0" end="1000" period="20" from="310962293#4" to="-140908235#0"/>
-    <flow id="1" begin="0" end="1000" period="20" from="125529784" to="101023046"/>
-    <flow id="2" begin="0" end="1000" period="20" from="43376165#7" to="39447900#1"/>
-    <flow id="3" begin="0" end="1000" period="20" from="915623290#3" to="-23597846#2"/>
-    <flow id="4" begin="0" end="1000" period="20" from="183462755#6" to="-140908903#0"/>
-    <flow id="5" begin="0" end="1000" period="20" from="100609295#4" to="249454646"/>
-    <flow id="6" begin="0" end="1000" period="20" from="-124314974#5" to="100609305"/>
-    <flow id="7" begin="0" end="1000" period="20" from="32532534#0" to="263590261#2"/>
-    <flow id="8" begin="0" end="1000" period="20" from="100609307" to="264957568#2"/>
-    <flow id="9" begin="0" end="1000" period="20" from="781803233" to="-100856860#0"/>
-    <flow id="10" begin="0" end="1000" period="20" from="778204605#5" to="43334483#2"/>
-    <flow id="11" begin="0" end="1000" period="20" from="14467384#4" to="-773795642#0"/>
-    <flow id="12" begin="0" end="1000" period="20" from="917550932#0" to="14467384#5"/>
-    <flow id="13" begin="0" end="1000" period="20" from="-142018804#4" to="-262946408#3"/>
-    <flow id="14" begin="0" end="1000" period="20" from="915139687" to="264961860#2"/>
-    <flow id="15" begin="0" end="1000" period="20" from="781678260" to="43376165#12"/>
-    <flow id="16" begin="0" end="1000" period="20" from="262068624" to="918408889#1"/>
-    <flow id="17" begin="0" end="1000" period="20" from="14481694" to="263590273#6"/>
-    <flow id="18" begin="0" end="1000" period="20" from="896909183" to="27937907#0"/>
-    <flow id="19" begin="0" end="1000" period="20" from="915219750#0" to="264650984#2"/>
+    <flow id="0" begin="0" end="1" period="20" from="310962293#4" to="-140908235#0"/>
+    <flow id="1" begin="0" end="1" period="20" from="125529784" to="101023046"/>
+    <flow id="2" begin="0" end="1" period="20" from="43376165#7" to="39447900#1"/>
+    <flow id="3" begin="0" end="1" period="20" from="915623290#3" to="-23597846#2"/>
+    <flow id="4" begin="0" end="1" period="20" from="183462755#6" to="-140908903#0"/>
+    <flow id="5" begin="0" end="1" period="20" from="100609295#4" to="249454646"/>
+    <flow id="6" begin="0" end="1" period="20" from="-124314974#5" to="100609305"/>
+    <flow id="7" begin="0" end="1" period="20" from="32532534#0" to="263590261#2"/>
+    <flow id="8" begin="0" end="1" period="20" from="100609307" to="264957568#2"/>
+    <flow id="9" begin="0" end="1" period="20" from="781803233" to="-100856860#0"/>
+    <flow id="10" begin="0" end="1" period="20" from="778204605#5" to="43334483#2"/>
+    <flow id="11" begin="0" end="1" period="20" from="14467384#4" to="-773795642#0"/>
+    <flow id="12" begin="0" end="1" period="20" from="917550932#0" to="14467384#5"/>
+    <flow id="13" begin="0" end="1" period="20" from="-142018804#4" to="-262946408#3"/>
+    <flow id="14" begin="0" end="1" period="20" from="915139687" to="264961860#2"/>
+    <flow id="15" begin="0" end="1" period="20" from="781678260" to="43376165#12"/>
+    <flow id="16" begin="0" end="1" period="20" from="262068624" to="918408889#1"/>
+    <flow id="17" begin="0" end="1" period="20" from="14481694" to="263590273#6"/>
+    <flow id="18" begin="0" end="1" period="20" from="896909183" to="27937907#0"/>
+    <flow id="19" begin="0" end="1" period="20" from="915219750#0" to="264650984#2"/>
 </routes>
