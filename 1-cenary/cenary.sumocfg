@@ -1,0 +1,7 @@
+<configuration>
+    <input>
+        <net-file value="cenary.net.xml"/>
+        <route-files value="cenary.car.rou.xml,cenary.emergency.rou.xml"/>
+        <additional-files value="parkingareas.add.xml"/>
+    </input>
+</configuration>
