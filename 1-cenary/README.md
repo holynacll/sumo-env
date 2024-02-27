@@ -25,3 +25,4 @@ Analysis and Modelling of Road Traffic Using SUMO to Optimize the Arrival Time o
 Intelligent traffic management for emergency vehicles with a simulation case study - https://www.youtube.com/watch?v=7rpXvYsNFIE
 A Programmer's Note on TraCI_tls, TraCI, and SUMO - https://intelaligent.github.io/tctb/post-learning-traci-tls.html
 
+https://github.com/eclipse-sumo/sumo/issues/4312
