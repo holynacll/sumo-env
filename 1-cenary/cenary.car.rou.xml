@@ -1,17 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- generated on 2024-02-26 22:04:56.205711 by randomTrips.py UNKNOWN
+<!-- generated on 2024-03-03 21:41:08.528034 by randomTrips.py UNKNOWN
 <configuration>
     <net-file value="cenary.net.xml"/>
     <output-trip-file value="odtrips.car.xml"/>
     <route-file value="cenary.car.rou.xml"/>
     <prefix value="car"/>
-    <trip-attributes value="color=&quot;0,0,1&quot;"/>
+    <trip-attributes value="color=&quot;0,0,1&quot; accel=&quot;0.8&quot; decel=&quot;4.5&quot; sigma=&quot;0.5&quot; length=&quot;5&quot; minGap=&quot;2.5&quot; maxSpeed=&quot;16.67&quot; guiShape=&quot;passenger&quot;"/>
     <period value="2.0"/>
 </configuration>
 -->
 
-<!-- generated on 2024-02-26 22:04:55 by Eclipse SUMO duarouter Version 1.19.0
+<!-- generated on 2024-02-28 23:52:00.429049 by randomTrips.py UNKNOWN
+<configuration>
+    <net-file value="cenary.net.xml"/>
+    <output-trip-file value="odtrips.car.xml"/>
+    <route-file value="cenary.car.rou.xml"/>
+    <prefix value="car"/>
+    <trip-attributes value="color=&quot;0,0,1&quot; accel=&quot;0.8&quot; decel=&quot;4.5&quot; sigma=&quot;0.5&quot; length=&quot;5&quot; minGap=&quot;2.5&quot; maxSpeed=&quot;16.67&quot; guiShape=&quot;passenger&quot;"/>
+    <period value="2.0"/>
+</configuration>
+-->
+
+<!-- generated on 2024-02-28 23:52:00 by Eclipse SUMO duarouter Version 1.19.0
 <configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/duarouterConfiguration.xsd">
 
     <input>
@@ -145,7 +156,7 @@
         <route edges="B1B2 B2B1 B1B0 B0C0"/>
     </vehicle>
     <vehicle id="car35" depart="70.00" color="blue">
-        <route edges="B0A0 A0A1 A1A2 A2B2 B2C2 C2D2 D2D3"/>
+        <route edges="B0A0 A0A1 A1B1 B1C1 C1D1 D1D2 D2D3"/>
     </vehicle>
     <vehicle id="car36" depart="72.00" color="blue">
         <route edges="D1D2 D2D1 D1C1 C1B1 B1B2"/>
@@ -1264,7 +1275,7 @@
         <route edges="C1B1 B1B0 B0B1"/>
     </vehicle>
     <vehicle id="car408" depart="816.00" color="blue">
-        <route edges="C3D3 D3D2 D2D1 D1C1 C1B1 B1A1 A1A0"/>
+        <route edges="C3D3 D3D2 D2C2 C2B2 B2A2 A2A1 A1A0"/>
     </vehicle>
     <vehicle id="car409" depart="818.00" color="blue">
         <route edges="C3B3 B3C3 C3C2 C2C3"/>
@@ -1285,7 +1296,7 @@
         <route edges="C1C0 C0C1 C1D1 D1D0"/>
     </vehicle>
     <vehicle id="car415" depart="830.00" color="blue">
-        <route edges="D1D0 D0C0 C0B0 B0B1 B1B2 B2B3 B3A3"/>
+        <route edges="D1D0 D0C0 C0C1 C1C2 C2C3 C3B3 B3A3"/>
     </vehicle>
     <vehicle id="car416" depart="832.00" color="blue">
         <route edges="C0C1 C1C2 C2C3 C3B3 B3A3"/>
@@ -1330,7 +1341,7 @@
         <route edges="A1B1 B1C1 C1D1"/>
     </vehicle>
     <vehicle id="car430" depart="860.00" color="blue">
-        <route edges="D1D0 D0C0 C0B0 B0B1 B1B2 B2B3 B3A3"/>
+        <route edges="D1D0 D0C0 C0C1 C1C2 C2C3 C3B3 B3A3"/>
     </vehicle>
     <vehicle id="car431" depart="862.00" color="blue">
         <route edges="C2C3 C3D3 D3D2 D2C2"/>
@@ -2296,7 +2307,7 @@
         <route edges="A2A3 A3B3 B3C3 C3C2 C2C1 C1C2"/>
     </vehicle>
     <vehicle id="car752" depart="1504.00" color="blue">
-        <route edges="C3D3 D3D2 D2D1 D1C1 C1B1 B1A1 A1A0 A0B0"/>
+        <route edges="C3D3 D3D2 D2C2 C2B2 B2A2 A2A1 A1A0 A0B0"/>
     </vehicle>
     <vehicle id="car753" depart="1506.00" color="blue">
         <route edges="A1A2 A2A3 A3B3 B3C3 C3D3"/>
@@ -2689,7 +2700,7 @@
         <route edges="B0B1 B1C1 C1C0 C0D0"/>
     </vehicle>
     <vehicle id="car883" depart="1766.00" color="blue">
-        <route edges="B0A0 A0A1 A1A2 A2B2 B2C2 C2D2 D2D3 D3C3"/>
+        <route edges="B0A0 A0A1 A1B1 B1C1 C1D1 D1D2 D2D3 D3C3"/>
     </vehicle>
     <vehicle id="car884" depart="1768.00" color="blue">
         <route edges="B1B0 B0B1 B1A1"/>
@@ -3340,7 +3351,7 @@
         <route edges="D2D3 D3C3 C3C2 C2B2 B2B3"/>
     </vehicle>
     <vehicle id="car1100" depart="2200.00" color="blue">
-        <route edges="C3D3 D3D2 D2D1 D1C1 C1B1 B1A1 A1A0 A0B0"/>
+        <route edges="C3D3 D3D2 D2C2 C2B2 B2A2 A2A1 A1A0 A0B0"/>
     </vehicle>
     <vehicle id="car1101" depart="2202.00" color="blue">
         <route edges="B1A1 A1A2 A2A3 A3B3 B3C3 C3D3 D3D2"/>
@@ -3619,7 +3630,7 @@
         <route edges="A1A2 A2A1 A1B1"/>
     </vehicle>
     <vehicle id="car1193" depart="2386.00" color="blue">
-        <route edges="D1D0 D0C0 C0B0 B0B1 B1B2 B2B3 B3A3 A3A2"/>
+        <route edges="D1D0 D0C0 C0C1 C1C2 C2C3 C3B3 B3A3 A3A2"/>
     </vehicle>
     <vehicle id="car1194" depart="2388.00" color="blue">
         <route edges="B1B2 B2B3 B3A3"/>
@@ -4069,7 +4080,7 @@
         <route edges="B0C0 C0D0 D0D1 D1D2"/>
     </vehicle>
     <vehicle id="car1343" depart="2686.00" color="blue">
-        <route edges="C3D3 D3D2 D2D1 D1C1 C1B1 B1A1 A1A0 A0B0"/>
+        <route edges="C3D3 D3D2 D2C2 C2B2 B2A2 A2A1 A1A0 A0B0"/>
     </vehicle>
     <vehicle id="car1344" depart="2688.00" color="blue">
         <route edges="D0C0 C0B0 B0B1 B1A1"/>
@@ -4282,7 +4293,7 @@
         <route edges="D0D1 D1D2 D2D3 D3C3 C3D3 D3D2"/>
     </vehicle>
     <vehicle id="car1414" depart="2828.00" color="blue">
-        <route edges="A2A3 A3B3 B3C3 C3C2 C2C1 C1C0 C0D0 D0D1"/>
+        <route edges="A2A3 A3B3 B3B2 B2B1 B1B0 B0C0 C0D0 D0D1"/>
     </vehicle>
     <vehicle id="car1415" depart="2830.00" color="blue">
         <route edges="B2A2 A2A1 A1B1 B1C1 C1D1"/>
@@ -4366,7 +4377,7 @@
         <route edges="B0A0 A0A1 A1B1 B1C1 C1D1 D1D2"/>
     </vehicle>
     <vehicle id="car1442" depart="2884.00" color="blue">
-        <route edges="C3D3 D3D2 D2D1 D1C1 C1B1 B1A1 A1A0"/>
+        <route edges="C3D3 D3D2 D2C2 C2B2 B2A2 A2A1 A1A0"/>
     </vehicle>
     <vehicle id="car1443" depart="2886.00" color="blue">
         <route edges="D3D2 D2D1 D1D0 D0C0 C0C1"/>
