@@ -16,6 +16,7 @@ else:
 # sumoCmd = [sumo_gui, "-c", file]
 
 import traci
+import traci.constants as tc
 from sumolib import checkBinary  # noqa
 # traci.start(sumoCmd)
 
@@ -41,20 +42,32 @@ def shouldContinueSim():
 
 def run():
     step = 0
+    junctionID = traci.junction.getIDList()[0]
+    traci.junction.subscribeContext(
+        junctionID, tc.CMD_GET_VEHICLE_VARIABLE, 1000000,
+        [tc.VAR_SPEED, tc.VAR_ALLOWED_SPEED]
+    )
+    stepLength = traci.simulation.getDeltaT()
     while shouldContinueSim():
         traci.simulationStep()
         vehicles = traci.vehicle.getIDList()
+        if traci.simulation.getTime() > 250:
+            # create accident
+            some_vehicle_id = vehicles[0]
+            traci.vehicle.setSpeed(some_vehicle_id, 0)
+            # traci.vehicle.setSpeedMode(some_vehicle_id, 0)
+            # broadcast message to vanets? how do i announce an accident?
+            
         for vehicle_id in vehicles:
             type_id = traci.vehicle.getTypeID(vehicle_id)
             if type_id == 'emergency_emergency':
-                print(type_id)
                 """
                 Return list of upcoming traffic lights [(tlsID, tlsIndex, distance, state), ...]
                 cada tls está em ordem crescente de distância 
                 The lanePosition is the driving distance from the start of the edge (road) in meters
                 """
                 next_tls_set = traci.vehicle.getNextTLS(vehicle_id)
-                print("next tls for vehicle emergency:", vehicle_id, " is ", next_tls_set)
+                # print("next tls for vehicle emergency:", vehicle_id, " is ", next_tls_set)
                 for tls in next_tls_set:
                     # get tls
                     tls_id = tls[0]
@@ -63,8 +76,8 @@ def run():
                     tls_state = tls[3]
                     if vehicle_distance_to_tls < 40:
                         if tls_state in ('g', 'G'):
-                            # traci.trafficlight.setPhase(tls_id, 0)
                             traci.trafficlight.setPhaseDuration(tls_id, 5)
+                            # traci.trafficlight.setPhase(tls_id, 0)
                     # check_tls(tls_id)
                     # tls_phases = traci.trafficlight.getRedYellowGreenState(tls_id)
                     # print(tls_phases)
@@ -102,13 +115,23 @@ def run():
         #     print("CO2Emission ", vehicles[i], ": ", traci.vehicle.getCO2Emission(vehicles[i]), " mg/s")
         #     print("EdgeID of veh ", vehicles[i], ": ", traci.vehicle.getRoadID(vehicles[i]))
         #     print("Distance ", vehicles[i], ": ", traci.vehicle.getDistance(vehicles[i]), " m")
+        scResults = traci.junction.getContextSubscriptionResults(junctionID)
+        halting = 0
+        if scResults:
+            relSpeeds = [d[tc.VAR_SPEED] / d[tc.VAR_ALLOWED_SPEED] for d in scResults.values()]
+            # compute values corresponding to summary-output
+            running = len(relSpeeds)
+            halting = len([1 for d in scResults.values() if d[tc.VAR_SPEED] < 0.1])
+            meanSpeedRelative = sum(relSpeeds) / running
+            timeLoss = (1 - meanSpeedRelative) * running * stepLength
+        print(traci.simulation.getTime(), timeLoss, halting)
         step += 1
 
     #get network parameters
-    IDsOfEdges=traci.edge.getIDList()
-    print("IDs of the edges:", IDsOfEdges)
-    IDsOfJunctions=traci.junction.getIDList()
-    print("IDs of junctions:", IDsOfJunctions)
+    # IDsOfEdges=traci.edge.getIDList()
+    # print("IDs of the edges:", IDsOfEdges)
+    # IDsOfJunctions=traci.junction.getIDList()
+    # print("IDs of junctions:", IDsOfJunctions)
 
     traci.close()
 
