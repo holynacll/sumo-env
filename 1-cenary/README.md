@@ -14,7 +14,7 @@ Cenário:
 
 2 - python $SUMO_HOME/tools/randomTrips.py -n cenary.net.xml -o odtrips.car.xml -r cenary.car.rou.xml --prefix car --period 1 -p 2 --trip-attributes='color=\"0,0,1\" accel=\"0.8\" decel=\"4.5\" sigma=\"0.5\" length=\"5\" minGap=\"2.5\" maxSpeed=\"16.67\" guiShape=\"passenger\"'
 
-3 - python $SUMO_HOME/tools/randomTrips.py -n cenary.net.xml -o odtrips.emergency.xml -r cenary.emergency.rou.xml --prefix emergency --period 100 -p 10 --vehicle-class emergency --trip-attributes='color=\"1,0,0\"'
+3 - python $SUMO_HOME/tools/randomTrips.py -n cenary.net.xml -o odtrips.emergency.xml -r cenary.emergency.rou.xml --prefix emergency --period 1000 -p 150 --vehicle-class emergency --trip-attributes='color=\"1,0,0\"'
 
 4 - python $SUMO_HOME/tools/generateParkingAreas.py -n cenary.net.xml -o parkingareas.add.xml --space-length 10 --probability 0.1
 
@@ -26,6 +26,12 @@ Analysis and Modelling of Road Traffic Using SUMO to Optimize the Arrival Time o
 Intelligent traffic management for emergency vehicles with a simulation case study - https://www.youtube.com/watch?v=7rpXvYsNFIE
 A Programmer's Note on TraCI_tls, TraCI, and SUMO - https://intelaligent.github.io/tctb/post-learning-traci-tls.html
 Quantifying the impact of connected and autonomous vehicles on traffic efficiency and safety in mixed traffic
+https://core.ac.uk/download/pdf/147323687.pdf
+https://easychair.org/publications/open/6KGt
+https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=9264154
+https://www.researchgate.net/publication/328406378_Urban_Traffic_Optimization_with_Real_Time_Intelligence_Intersection_Traffic_Light_System
+https://people.engr.tamu.edu/guni/Papers/NeurIPS-signals.pdf
+https://arxiv.org/pdf/2107.10146.pdf
 
 refs:
 Lane-Changing Model in SUMO

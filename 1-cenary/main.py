@@ -42,38 +42,40 @@ def shouldContinueSim():
 def run():
     step = 0
     while shouldContinueSim():
-        # time.sleep(0.5)
         traci.simulationStep()
         vehicles = traci.vehicle.getIDList()
-        # for vehicle_id in vehicles:
-        #     type_id = traci.vehicle.getTypeID(vehicle_id)
-        #     if type_id == 'emergency_emergency':
-        #         print(type_id)
-        #         """
-        #         Return list of upcoming traffic lights [(tlsID, tlsIndex, distance, state), ...]
-        #         cada tls está em ordem crescente de distância 
-        #         The lanePosition is the driving distance from the start of the edge (road) in meters
-        #         """
-        #         next_tls_set = traci.vehicle.getNextTLS(vehicle_id)
-        #         for tls in next_tls_set:
-        #             # get tls
-        #             tls_id = tls[0]
-        #             tls_index = tls[1]
-        #             vehicle_distance_to_tls = tls[2]
-        #             tls_state = tls[3]
-        #             check_tls(tls_id)
+        for vehicle_id in vehicles:
+            type_id = traci.vehicle.getTypeID(vehicle_id)
+            if type_id == 'emergency_emergency':
+                print(type_id)
+                """
+                Return list of upcoming traffic lights [(tlsID, tlsIndex, distance, state), ...]
+                cada tls está em ordem crescente de distância 
+                The lanePosition is the driving distance from the start of the edge (road) in meters
+                """
+                next_tls_set = traci.vehicle.getNextTLS(vehicle_id)
+                print("next tls for vehicle emergency:", vehicle_id, " is ", next_tls_set)
+                for tls in next_tls_set:
+                    # get tls
+                    tls_id = tls[0]
+                    tls_index = tls[1]
+                    vehicle_distance_to_tls = tls[2]
+                    tls_state = tls[3]
+                    if vehicle_distance_to_tls < 40:
+                        if tls_state in ('g', 'G'):
+                            # traci.trafficlight.setPhase(tls_id, 0)
+                            traci.trafficlight.setPhaseDuration(tls_id, 5)
+                    # check_tls(tls_id)
                     # tls_phases = traci.trafficlight.getRedYellowGreenState(tls_id)
                     # print(tls_phases)
                     # for index, phase in enumerate(tls_phases):
                     #     if phase in ('g', 'G'):
-                    #         traci.trafficlight.setPhase(tls_id, int(index))
-                    #         traci.trafficlight.setPhaseDuration(tls_id, 42)
+                    #         # traci.trafficlight.setPhase(tls_id, int(index))
+                    #         traci.trafficlight.setPhaseDuration(tls_id, 10)
                     #         break
                     
-                    # if
                     # vehicle_speed = traci.vehicle.getSpeed(vehicle_id)
                     # time_to_tls = tls_distance/vehicle_speed
-                # print("next tls for vehicle emergency:", vehicle_id, " is ", next_tls_set)
         # tls_id_list = traci.trafficlight.getIDList()
         # for tls_id in tls_id_list:
         #     links_controlleds = traci.trafficlight.getControlledLinks(tls_id)
@@ -89,11 +91,11 @@ def run():
         #     if traci.inductionloop.getLastStepVehicleNumber(edge_id) > 0:
         #         print(f"carro passou pela edge {edge_id}")
         
-        if step%10==0:
-            for i in range(0, len(vehicles)):
-                print(vehicles[i])
-                traci.vehicle.setSpeed(vehicles[i], 15)  
-                traci.gui.toggleSelection(vehicles[i])
+        # if step%10==0:
+        #     for i in range(0, len(vehicles)):
+        #         print(vehicles[i])
+        #         traci.vehicle.setSpeed(vehicles[i], 15)  
+        #         traci.gui.toggleSelection(vehicles[i])
                 
                 
         #     print("Speed ", vehicles[i], ": ", traci.vehicle.getSpeed(vehicles[i]), " m/s")
