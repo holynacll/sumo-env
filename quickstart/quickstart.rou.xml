@@ -16,6 +16,7 @@
   <route id="route10" edges="L8 L9 L11 L1"/>
   <route id="route11" edges="L8 L9 L15 L13 L3"/>
   <route id="route12" edges="L8 L9 L15 L18 L5"/>
+  <route id="route13" edges="L2 E4 E5 E6 L9" />
   <vehicle depart="54000" id="veh0" route="route01" type="CarA" color="1,0,0" />
   <vehicle depart="54000" id="veh1" route="route02" type="CarA" />
   <vehicle depart="54000" id="veh2" route="route03" type="CarA" />
@@ -35,5 +36,6 @@
   <vehicle depart="54000" id="veh16" route="route05" type="CarB" />
   <vehicle depart="54000" id="veh17" route="route06" type="CarB" />
   <vehicle depart="54000" id="veh18" route="route07" type="CarB" />
+  <vehicle depart="54000" id="veh19" route="route13" type="CarB" />
 ...
 </routes>

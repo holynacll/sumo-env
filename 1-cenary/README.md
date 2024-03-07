@@ -1,3 +1,6 @@
+Docs:
+  - https://sumo.dlr.de/pydoc/
+
 Cenário: 
   - network grid, com carros, semáforos e Ponto A e Ponto B
     - distancia eucl, manh e harvesine
@@ -10,9 +13,11 @@ Cenário:
 
 0 - $SUMO_HOME = "C:\Users\Alexandre Cury\miniconda3\envs\sumo-env\Lib\site-packages\sumo"
 
-1 - netgenerate --grid --grid.number=4 --grid.length=150 --default-junction-type traffic_light --output-file=cenary.net.xml 
+1 - netgenerate --grid --grid.number=4 --grid.length=150 --default.lanenumber 2 --default-junction-type traffic_light --output-file=cenary.net.xml 
 
-2 - python $SUMO_HOME/tools/randomTrips.py -n cenary.net.xml -o odtrips.car.xml -r cenary.car.rou.xml --prefix car --period 1 -p 2 --trip-attributes='color=\"0,0,1\" accel=\"0.8\" decel=\"4.5\" sigma=\"0.5\" length=\"5\" minGap=\"2.5\" maxSpeed=\"16.67\" guiShape=\"passenger\"'
+1 - netgenerate --grid --grid.x-number=4 --grid.y-number=2 --grid.y-length=40 --grid.x-length=100 --default.lanenumber 1 --default-junction-type traffic_light --output-file=b_cenary.net.xml 
+
+2 - python $SUMO_HOME/tools/randomTrips.py -n cenary.net.xml -o odtrips.car.xml -r cenary.car.rou.xml --prefix car --period 1 -p 1 --trip-attributes='color=\"0,0,1\" accel=\"0.8\" decel=\"4.5\" sigma=\"0.5\" length=\"5\" minGap=\"2.5\" maxSpeed=\"16.67\" guiShape=\"passenger\"'
 
 3 - python $SUMO_HOME/tools/randomTrips.py -n cenary.net.xml -o odtrips.emergency.xml -r cenary.emergency.rou.xml --prefix emergency --period 1000 -p 150 --vehicle-class emergency --trip-attributes='color=\"1,0,0\"'
 
@@ -32,6 +37,7 @@ https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=9264154
 https://www.researchgate.net/publication/328406378_Urban_Traffic_Optimization_with_Real_Time_Intelligence_Intersection_Traffic_Light_System
 https://people.engr.tamu.edu/guni/Papers/NeurIPS-signals.pdf
 https://arxiv.org/pdf/2107.10146.pdf
+Simulation of accident with V2X communication using SUMO-TraCI-Veins - https://www.youtube.com/watch?v=7TXngtcCPz4
 
 refs:
 Lane-Changing Model in SUMO

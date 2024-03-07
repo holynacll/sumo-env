@@ -32,6 +32,14 @@ def check_tls(tls_id):
     print("switch", traci.trafficlight.getNextSwitch(tls_id))
 
 
+def check_vehicle(vehicle_id):
+    # Read current values
+    print("Speed ", vehicle_id, ": ", traci.vehicle.getSpeed(vehicle_id), " m/s")
+    print("CO2Emission ", vehicle_id, ": ", traci.vehicle.getCO2Emission(vehicle_id), " mg/s")
+    print("EdgeID of veh ", vehicle_id, ": ", traci.vehicle.getRoadID(vehicle_id))
+    print("Distance ", vehicle_id, ": ", traci.vehicle.getDistance(vehicle_id), " m")
+
+
 def shouldContinueSim():
     """Checks that the simulation should continue running.
     Returns:
@@ -48,16 +56,31 @@ def run():
         [tc.VAR_SPEED, tc.VAR_ALLOWED_SPEED]
     )
     stepLength = traci.simulation.getDeltaT()
+    accidents_num = 1
+    allowed_vehicles_type_on_emergency = ['emergency']
+    
     while shouldContinueSim():
         traci.simulationStep()
-        vehicles = traci.vehicle.getIDList()
-        if traci.simulation.getTime() > 250:
-            # create accident
+        vehicles = traci.vehicle.getIDList()     
+        if traci.simulation.getTime()%250==0 and accidents_num > 0:
+            accidents_num -= 1
             some_vehicle_id = vehicles[0]
+            check_vehicle(some_vehicle_id)
+            # create accident
+            # Regard safe speed
+            traci.vehicle.setSpeedMode(some_vehicle_id, 0)
             traci.vehicle.setSpeed(some_vehicle_id, 0)
-            # traci.vehicle.setSpeedMode(some_vehicle_id, 0)
+            traci.vehicle.highlight(some_vehicle_id, (0, 0, 255, 255))
             # broadcast message to vanets? how do i announce an accident?
-            
+            #close the lane/edge
+            road_id = traci.vehicle.getRoadID(some_vehicle_id)
+            traci.edge.setAllowed(road_id, allowed_vehicles_type_on_emergency)
+            # get_position_vehicle
+            # x, y = traci.vehicle.getPosition(some_vehicle_id)
+            # traci.poi.add("140907752#1", x, y, color=(255, 0, 0), type="shop")
+            # traci.route.add("trip", ["startEdge", "endEdge"])
+            # traci.vehicle.add(f"newEmergencyVeh-{step}", "trip", typeID="reroutingType")
+            #sen
         for vehicle_id in vehicles:
             type_id = traci.vehicle.getTypeID(vehicle_id)
             if type_id == 'emergency_emergency':

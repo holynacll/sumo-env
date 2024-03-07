@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2024-02-09 17:22:45 by Eclipse SUMO polyconvert Version 1.19.0
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/polyconvertConfiguration.xsd">
+
+    <input>
+        <net-file value="my_sumo_net.net.xml"/>
+        <osm-files value="map.osm"/>
+        <type-file value="osmPolyconvert.typ.xml"/>
+    </input>
+
+    <output>
+        <output-file value="my_sumo_net.poly.xml"/>
+    </output>
+
+</configuration>
+-->
+
+<additional xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/additional_file.xsd">
+    <location netOffset="-186228.27,1752976.12" convBoundary="-1477.95,-1019.03,8365.03,6367.92" origBoundary="-47.943063,-15.845187,-47.850697,-15.779250" projParameter="+proj=utm +zone=23 +ellps=WGS84 +datum=WGS84 +units=m +no_defs"/>
+    <poly id="140907752#1" type="shop" color="237,199,255" fill="1" layer="-1.00" shape="4149.313398,3486.961536 4118.572545,3449.347582 4069.115191,3489.258808 4099.856042,3526.872833 4149.313398,3486.961536"/>
+    <poly id="140907753" type="building" color="255,230,230" fill="1" layer="-1.00" shape="4301.759268,3692.589727 4293.700483,3681.292834 4224.758254,3729.830211 4232.827601,3741.138351 4301.759268,3692.589727"/>
+</additional>
