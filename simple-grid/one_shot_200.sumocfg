@@ -1,0 +1,23 @@
+<configuration>
+    <files>
+        <net-file value="road.net.xml"/>
+        <route-files value="trips.trips.xml"/>
+        <vehroutes value="vehroutes_200.xml"/>
+        <summary value="summary_200.xml"/>
+        <tripinfo value="tripinfo_200.xml"/>
+        <additional-files value="dump_200.add.xml"/>
+    </files>
+    <process>
+        <begin value="0"/>
+        <route-steps value="200"/>
+        <routing-algorithm value="astar"/>
+        
+        <vehroute-output.last-route value="False"/>
+        <vehroute-output.exit-times value="False"/>
+        <vehroute-output.sorted value="False"/>
+    </process>
+    <reports>
+        <verbose value="True"/>
+        <no-warnings value="True"/>
+    </reports>
+</configuration>
