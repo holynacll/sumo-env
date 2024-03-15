@@ -157,6 +157,110 @@ def run():
     # print("IDs of junctions:", IDsOfJunctions)
 
     traci.close()
+    
+    while shouldContinueSim():
+        traci.simulationStep()
+        vehicles = traci.vehicle.getIDList()
+        if traci.simulation.getTime() > 54000 and accidents_num > 0:
+            if len(vehicles) > 0:
+                some_vehicle_id = vehicles[0]
+                road_id = traci.vehicle.getRoadID(some_vehicle_id)
+                print(road_id)
+                if road_id != 'L12':
+                    print(f"pass for road {road_id}")
+                    continue
+                check_vehicle(some_vehicle_id)
+                # create accident
+                # Regard safe speed
+                traci.vehicle.setSpeedMode(some_vehicle_id, 0)
+                traci.vehicle.setSpeed(some_vehicle_id, 0)
+                traci.vehicle.highlight(some_vehicle_id, (0, 0, 255, 255))
+                # broadcast message to vanets? how do i announce an accident?
+                #close the lane/edge
+                traci.edge.setAllowed(road_id, allowed_vehicles_type_on_emergency)
+                # get_position_vehicle
+                # x, y = traci.vehicle.getPosition(some_vehicle_id)
+                # traci.poi.add("140907752#1", x, y, color=(255, 0, 0), type="shop")
+                # traci.route.add("trip", ["startEdge", "endEdge"])
+                # traci.vehicle.add(f"newEmergencyVeh-{step}", "trip", typeID="reroutingType")
+                #sen
+                accidents_num -= 1
+        for vehicle_id in vehicles:
+            type_id = traci.vehicle.getTypeID(vehicle_id)
+            if type_id == 'emergency_emergency':
+                """
+                Return list of upcoming traffic lights [(tlsID, tlsIndex, distance, state), ...]
+                cada tls estÃ¡ em ordem crescente de distÃ¢ncia
+                The lanePosition is the driving distance from the start of the edge (road) in meters
+                """
+                next_tls_set = traci.vehicle.getNextTLS(vehicle_id)
+                # print("next tls for vehicle emergency:", vehicle_id, " is ", next_tls_set)
+                for tls in next_tls_set:
+                    # get tls
+                    tls_id = tls[0]
+                    tls_index = tls[1]
+                    vehicle_distance_to_tls = tls[2]
+                    tls_state = tls[3]
+                    if vehicle_distance_to_tls < 40:
+                        if tls_state in ('g', 'G'):
+                            traci.trafficlight.setPhaseDuration(tls_id, 5)
+                            # traci.trafficlight.setPhase(tls_id, 0)
+                    # check_tls(tls_id)
+                    # tls_phases = traci.trafficlight.getRedYellowGreenState(tls_id)
+                    # print(tls_phases)
+                    # for index, phase in enumerate(tls_phases):
+                    #     if phase in ('g', 'G'):
+                    #         # traci.trafficlight.setPhase(tls_id, int(index))
+                    #         traci.trafficlight.setPhaseDuration(tls_id, 10)
+                    #         break
+
+                    # vehicle_speed = traci.vehicle.getSpeed(vehicle_id)
+                    # time_to_tls = tls_distance/vehicle_speed
+        # tls_id_list = traci.trafficlight.getIDList()
+        # for tls_id in tls_id_list:
+        #     links_controlleds = traci.trafficlight.getControlledLinks(tls_id)
+        #     print('links controllers: ', links_controlleds)
+        #     for links_set_list in links_controlleds:
+        #         for link_set in links_set_list:
+        #             for link in link_set:
+        #                 print('link: ', link)
+        #                 vehiclesblock = traci.trafficlight.getBlockingVehicles(tls_id, str(link))
+        #                 print('cars blocked', vehiclesblock)
+        # print(edges)
+        # for edge_id in edges:
+        #     if traci.inductionloop.getLastStepVehicleNumber(edge_id) > 0:
+        #         print(f"carro passou pela edge {edge_id}")
+
+        # if step%10==0:
+        #     for i in range(0, len(vehicles)):
+        #         print(vehicles[i])
+        #         traci.vehicle.setSpeed(vehicles[i], 15)
+        #         traci.gui.toggleSelection(vehicles[i])
+
+
+        #     print("Speed ", vehicles[i], ": ", traci.vehicle.getSpeed(vehicles[i]), " m/s")
+        #     print("CO2Emission ", vehicles[i], ": ", traci.vehicle.getCO2Emission(vehicles[i]), " mg/s")
+        #     print("EdgeID of veh ", vehicles[i], ": ", traci.vehicle.getRoadID(vehicles[i]))
+        #     print("Distance ", vehicles[i], ": ", traci.vehicle.getDistance(vehicles[i]), " m")
+        scResults = traci.junction.getContextSubscriptionResults(junctionID)
+        halting = 0
+        if scResults:
+            relSpeeds = [d[tc.VAR_SPEED] / d[tc.VAR_ALLOWED_SPEED] for d in scResults.values()]
+            # compute values corresponding to summary-output
+            running = len(relSpeeds)
+            halting = len([1 for d in scResults.values() if d[tc.VAR_SPEED] < 0.1])
+            meanSpeedRelative = sum(relSpeeds) / running
+            timeLoss = (1 - meanSpeedRelative) * running * stepLength
+            print(traci.simulation.getTime(), timeLoss, halting)
+        step += 1
+
+    #get network parameters
+    # IDsOfEdges=traci.edge.getIDList()
+    # print("IDs of the edges:", IDsOfEdges)
+    # IDsOfJunctions=traci.junction.getIDList()
+    # print("IDs of junctions:", IDsOfJunctions)
+
+    traci.close()
 
 
 def get_options():

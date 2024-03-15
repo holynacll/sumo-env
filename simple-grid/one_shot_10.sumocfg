@@ -9,13 +9,14 @@
     </files>
     <process>
         <begin value="0"/>
-        <route-steps value="200"/>
+        <route-steps value="2000"/>
         <routing-algorithm value="astar"/>
+        <time-to-teleport value="-1"/>
         <device.rerouting.probability value="1"/>
-        <device.rerouting.period value="10"/>
+        <device.rerouting.period value="25"/>
         <device.rerouting.adaptation-interval value="1"/>
         <device.rerouting.with-taz value="False"/>
-        <device.rerouting.explicit value=""/>
+        <device.rerouting.explicit value=""/>        
         <vehroute-output.last-route value="False"/>
         <vehroute-output.exit-times value="False"/>
         <vehroute-output.sorted value="False"/>

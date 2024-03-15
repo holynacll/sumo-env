@@ -2,6 +2,7 @@ import os
 import sys
 import time
 import optparse
+import random
 os.environ['SUMO_HOME'] = "/home/acll/miniconda3/envs/sumo-env/lib/python3.11/site-packages/sumo"
 
 if 'SUMO_HOME' in os.environ:
@@ -18,6 +19,7 @@ else:
 import traci
 import traci.constants as tc
 from sumolib import checkBinary  # noqa
+
 
 def check_tls(tls_id):
     print("checking tls_id: ", tls_id)
@@ -51,35 +53,40 @@ def shouldContinueSim():
 def improve_traffic_on_accident(emergency_route_id):
     vehicles = traci.vehicle.getIDList()
     for veh_id in vehicles:
-        next_roads_list = traci.vehicle.getRoute(veh_id)
-        # print('next_roads_lists:', next_roads_list, 'emergency_route_id:', emergency_route_id)
-        if emergency_route_id in next_roads_list:
-            # check_vehicle(veh_id)
-            # traci.edge.adaptTraveltime(road_id,traci.edge.getTraveltime(road_id))
-            traci.vehicle.setAdaptedTraveltime(veh_id, emergency_route_id, float('inf'))
-            traci.vehicle.rerouteTraveltime(veh_id)
+        type_id = traci.vehicle.getTypeID(veh_id)
+        if type_id != 'emergency_emergency':
+            next_roads_list = traci.vehicle.getRoute(veh_id)
+            # print('next_roads_lists:', next_roads_list, 'emergency_route_id:', emergency_route_id)
+            if emergency_route_id in next_roads_list:
+                # check_vehicle(veh_id)
+                print(f"emergency_route_id: {emergency_route_id} and traveltime: {traci.edge.getTraveltime(emergency_route_id)}")
+                print(f"some_route_id: {next_roads_list[0]} and traveltime: {traci.edge.getTraveltime(next_roads_list[0])}")
+                # traci.vehicle.setAdaptedTraveltime(veh_id, emergency_route_id, float('inf'))
+                # traci.edge.adaptTraveltime(emergency_route_id,traci.edge.getTraveltime(emergency_route_id))
+                # traci.vehicle.rerouteTraveltime(veh_id)
+                traci.vehicle.setColor(veh_id, color=(0, 255, 0))
 
 
-def monitor_emergency_vehicles(monitor_emergency_vehicles_list):
-    for monitor_emergency_vehicle in monitor_emergency_vehicles_list:
+def monitor_emergency_vehicles(monitor_emergency_vehicles_list: list):
+    for key, monitor_emergency_vehicle in enumerate(monitor_emergency_vehicles_list):
         veh_accidented_id = monitor_emergency_vehicle['veh_accidented_id']
         veh_emergency_id = monitor_emergency_vehicle['veh_emergency_id']
         emergency_route_id = monitor_emergency_vehicle['emergency_route_id']
         arrival_pos = monitor_emergency_vehicle['arrival_pos']
         hospital_pos = monitor_emergency_vehicle['hospital_pos']
-        print('monitoring', monitor_emergency_vehicles_list)
+        # print('monitoring', monitor_emergency_vehicles_list)
         improve_traffic_on_accident(emergency_route_id)
         actual_road = traci.vehicle.getRoadID(veh_emergency_id)
-        print('actual_road:', actual_road, 'emergency_route_id:', emergency_route_id)
+        # print('actual_road:', actual_road, 'emergency_route_id:', emergency_route_id)
         if actual_road == emergency_route_id:
-            actual_pos = traci.vehicle.getDrivingDistance(veh_emergency_id, actual_road, arrival_pos)
-            print(actual_pos, arrival_pos)
-            if  actual_pos >= arrival_pos - 0.01:
+            distance = traci.vehicle.getDrivingDistance(veh_emergency_id, actual_road, arrival_pos)
+            if  distance < 1.0:
                 # new_emergency_route_id_back_to_hospital = f"rou_emergency_{traci.simulation.getTime()}"
                 # traci.route.add(routeID=new_emergency_route_id_back_to_hospital, edges=[actual_road, hospital_pos])
-                # traci.vehicle.changeTarget(veh_emergency_id, hospital_pos)
                 traci.vehicle.remove(veh_accidented_id)
                 traci.edge.setMaxSpeed(emergency_route_id, 50)
+                traci.vehicle.changeTarget(veh_emergency_id, hospital_pos)
+                monitor_emergency_vehicles_list.pop(key)
                 # stop vehicle for some duration
                 # rerouter emergency vehicle to hospital
                 # release vehicle accidented
@@ -92,10 +99,7 @@ def run():
         junctionID, tc.CMD_GET_VEHICLE_VARIABLE, 1000000,
         [tc.VAR_SPEED, tc.VAR_ALLOWED_SPEED]
     )
-    stepLength = traci.simulation.getDeltaT()
-    accidents_num = 1
     allowed_vehicles_type_on_emergency = ['emergency']
-    road_id_accidented_list = []
     monitor_emergency_vehicles_list = []
     hospital_pos = 'A1B1'
     while shouldContinueSim():
@@ -103,19 +107,16 @@ def run():
         monitor_emergency_vehicles(monitor_emergency_vehicles_list)
         vehicles = traci.vehicle.getIDList()
         # em um dado momento, acidente ocorre
-        if traci.simulation.getTime() > 50 and accidents_num > 0:
-            veh_accidented_id = vehicles[0]
+        if traci.simulation.getTime()%250 == 0:
+            random_number = random.randrange(0, len(vehicles))
+            veh_accidented_id = vehicles[random_number]
             road_id_accidented = traci.vehicle.getRoadID(veh_accidented_id)
-            # if (road_id == 'C1B1'):
-            accidents_num -= 1
-            # check_vehicle(veh_accidented_id)
             # create accident
             # Regard safe speed
-            traci.edge.setMaxSpeed(road_id_accidented, 0.1)
+            traci.edge.setMaxSpeed(road_id_accidented, 0.3)
             traci.vehicle.setSpeedMode(veh_accidented_id, 0)
             traci.vehicle.setSpeed(veh_accidented_id, 0)
             traci.vehicle.highlight(veh_accidented_id, (0, 0, 255, 255))
-            
             emergency_route_id = f"rou_emergency_{traci.simulation.getTime()}"
             veh_emergency_id = f"veh_emergency_{traci.simulation.getTime()}"
             arrival_pos = traci.vehicle.getLanePosition(veh_accidented_id)
@@ -129,7 +130,7 @@ def run():
                 departPos='base',
                 departSpeed='0',
                 arrivalLane='current',
-                arrivalPos=arrival_pos,
+                arrivalPos='max',
                 arrivalSpeed='current'
             )
             monitor_emergency_vehicles_list.append({
