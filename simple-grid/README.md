@@ -12,6 +12,9 @@ Cenário:
 
   TODO
   - article: Analysis and modelling of road traffic using SUMO tooptimize the arrival time of emergency vehicles
+   - pegar demanda de veículos de emergência/acidentes que ocorrem na base do samu
+   - pegar demanda de veículos de brasília
+   - focar em uma região de brasília, ex: Ceilândia
    - melhorar cenario do acidente
    - quando um VE se aproximar de um sinal, tornar ele verde (já está mantendo verde, precisa virar verde, se tiver vermelho ou amarelo)
      - article: Modelling green waves for emergency vehicles usingconnected traffic data
@@ -24,6 +27,10 @@ Cenário:
    - customizar/alternar algoritmos de roteamento
    - ajustar retorno dos veiculos na mesma via
    - ajustar controle de sinais "gggyyyrrr"
+
+OBS:
+dados abertos sobre a malha rodoviária de brasília - https://geoservicos.detran.df.gov.br/geoserver/web/wicket/bookmarkable/org.geoserver.web.demo.MapPreviewPage;jsessionid=F08C73149B32FCDEF43E0E34F2F9A086?0&filter=false
+
 
 0.1 - $SUMO_HOME = "C:\Users\Alexandre Cury\miniconda3\envs\sumo-env\Lib\site-packages\sumo"
 0.2 - export SUMO_HOME="/home/acll/miniconda3/envs/sumo-env/lib/python3.11/site-packages/sumo"
