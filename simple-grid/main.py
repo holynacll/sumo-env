@@ -4,7 +4,7 @@ import time
 import optparse
 import random
 import traceback
-os.environ['SUMO_HOME'] = "/home/acll/miniconda3/envs/sumo-env/lib/python3.11/site-packages/sumo"
+os.environ['SUMO_HOME'] = "/home/acll/workspace/sumo-env/.venv/lib/python3.11/site-packages/sumo"
 
 if 'SUMO_HOME' in os.environ:
     tools = os.path.join(os.environ['SUMO_HOME'], 'tools')
@@ -16,7 +16,17 @@ import traci
 import traci.constants as tc
 from sumolib import checkBinary  # noqa
 
-monitor_emergency_vehicles_list = []
+MAX_SPEED_ROAD_RECOVERED = 50
+MAX_SPEED_ROAD_ACCIDENTED = 0.8
+VEHICLE_DISTANCE_TO_TLS = 300 # Cooperative traffic management for emergency vehicles in the city of bologna, SUMO2017
+MIN_ARRIVAL_DISTANCE_EMERGENCY_VEHICLE_AT_THE_ACCIDENT = 1.0
+TLJ_PHASE_GREEN_DURATION = 5
+TLJ_PHASE_RED_YELLOW_TO_GREEN_DURATION = 2
+MAX_STOP_DURATION = 10
+COLOR_HIGHLIGHT = (0, 0, 255, 255)
+buffer_emergency_vehicles_on_the_way = []
+buffer_emergency_vehicles_in_the_accident = []
+buffer_tls_on_red = []
 hospital_pos = 'A1B1'
 
 def check_tls(tls_id):
@@ -69,70 +79,112 @@ def shouldContinueSim():
 
 
 def improve_traffic_on_accidented_road(vehicles):
-    for monitor_emergency_vehicle in monitor_emergency_vehicles_list:
-        emergency_route_id = monitor_emergency_vehicle['emergency_route_id']
+    for emergency_vehicle in buffer_emergency_vehicles_on_the_way + buffer_emergency_vehicles_in_the_accident:
+        accidented_road_id = emergency_vehicle['accidented_road_id']
         for veh_id in vehicles:
             type_id = traci.vehicle.getTypeID(veh_id)
             if type_id != 'emergency_emergency':
                 next_roads_list = traci.vehicle.getRoute(veh_id)
-                if emergency_route_id in next_roads_list:
-                    traci.edge.adaptTraveltime(emergency_route_id,traci.edge.getTraveltime(emergency_route_id))
+                if accidented_road_id in next_roads_list:
+                    traci.edge.adaptTraveltime(accidented_road_id,traci.edge.getTraveltime(accidented_road_id))
                     traci.vehicle.rerouteTraveltime(veh_id)
-                    if next_roads_list[-1] == emergency_route_id:
-                        traci.vehicle.setColor(veh_id, color=(0, 100, 100))
+                    if next_roads_list[-1] == accidented_road_id: 
+                        traci.vehicle.setColor(veh_id, color=(0, 100, 100)) # se for a ultima rota
+                    elif next_roads_list[0] == accidented_road_id: 
+                        traci.vehicle.setColor(veh_id, color=(100, 0, 100)) # se for a primeira rota
                     else:
-                        traci.vehicle.setColor(veh_id, color=(0, 255, 0))
+                        traci.vehicle.setColor(veh_id, color=(0, 255, 0)) # reroute vehicles to avoid of the aciddented road
 
 
-def speed_road_recovery(emergency_route_id):
-    MAX_SPEED_ROAD_RECOVERED = 50
+def speed_road_recovery(accidented_road_id):
     can_increase_max_speed = True
-    for monitor_road in  monitor_emergency_vehicles_list:
+    for emergency_vehicle in  buffer_emergency_vehicles_on_the_way  + buffer_emergency_vehicles_in_the_accident:
         # se existe algum acidente em andamento
-        if monitor_road['emergency_route_id'] == emergency_route_id:
+        if emergency_vehicle['accidented_road_id'] == accidented_road_id:
             can_increase_max_speed = False
     if can_increase_max_speed:
-        traci.edge.setMaxSpeed(emergency_route_id, MAX_SPEED_ROAD_RECOVERED)
+        traci.edge.setMaxSpeed(accidented_road_id, MAX_SPEED_ROAD_RECOVERED)
         print("max speed road recovered")
 
 
 def monitor_emergency_vehicles():
-    MIN_ARRIVAL_DISTANCE_EMERGENCY_VEHICLE_AT_THE_ACCIDENT = 1.0
-    for key, monitor_emergency_vehicle in enumerate(monitor_emergency_vehicles_list):
-        veh_accidented_id = monitor_emergency_vehicle['veh_accidented_id']
-        veh_emergency_id = monitor_emergency_vehicle['veh_emergency_id']
-        emergency_route_id = monitor_emergency_vehicle['emergency_route_id']
-        arrival_pos = monitor_emergency_vehicle['arrival_pos']
-        hospital_pos = monitor_emergency_vehicle['hospital_pos']
+    monitor_emergency_vehicles_on_the_way()
+    monitor_emergency_vehicles_in_the_accident()
+    
+
+
+def monitor_emergency_vehicles_in_the_accident():
+    for key, emergency_vehicle in enumerate(buffer_emergency_vehicles_in_the_accident):
+        veh_emergency_id = emergency_vehicle['veh_emergency_id']
+        hospital_pos = emergency_vehicle['hospital_pos']
+        veh_accidented_id = emergency_vehicle['veh_accidented_id']
+        accidented_road_id = emergency_vehicle['accidented_road_id']
+        duration = emergency_vehicle['duration']
+        if duration > 0:
+            duration -= 1
+            buffer_emergency_vehicles_in_the_accident[key]['duration'] = duration
+        else:
+            buffer_emergency_vehicles_in_the_accident.pop(key)
+            traci.vehicle.remove(veh_accidented_id)
+            traci.vehicle.changeTarget(veh_emergency_id, hospital_pos)
+            traci.vehicle.setSpeed(veh_emergency_id, 50)
+            speed_road_recovery(accidented_road_id)
+
+
+def monitor_emergency_vehicles_on_the_way():
+    for key, emergency_vehicle in enumerate(buffer_emergency_vehicles_on_the_way):
+        veh_accidented_id = emergency_vehicle['veh_accidented_id']
+        veh_emergency_id = emergency_vehicle['veh_emergency_id']
+        accidented_road_id = emergency_vehicle['accidented_road_id']
+        arrival_pos = emergency_vehicle['arrival_pos']
+        hospital_pos = emergency_vehicle['hospital_pos']
         actual_road = traci.vehicle.getRoadID(veh_emergency_id)
-        if actual_road == emergency_route_id:
+        if actual_road == accidented_road_id:
             distance = traci.vehicle.getDrivingDistance(veh_emergency_id, actual_road, arrival_pos)
             if  distance < MIN_ARRIVAL_DISTANCE_EMERGENCY_VEHICLE_AT_THE_ACCIDENT:
                 # stop emergency vehicle for some duration
-                traci.vehicle.remove(veh_accidented_id)
-                traci.vehicle.changeTarget(veh_emergency_id, hospital_pos)
-                monitor_emergency_vehicles_list.pop(key)
-                speed_road_recovery(emergency_route_id)
-                
+                traci.vehicle.setSpeedMode(veh_emergency_id, 31)
+                traci.vehicle.setSpeed(veh_emergency_id, 0)
+                buffer_emergency_vehicles_on_the_way.pop(key)
+                buffer_emergency_vehicles_in_the_accident.append({
+                    'veh_emergency_id': veh_emergency_id,
+                    'hospital_pos': hospital_pos,
+                    'veh_accidented_id': veh_accidented_id,
+                    'accidented_road_id': accidented_road_id,
+                    'duration': MAX_STOP_DURATION
+                })
 
 
 def create_accident_and_call_emergency_vehicle(vehicles):
-    MAX_SPEED_ROAD_ACCIDENTED = 0.3
-    random_number = random.randrange(0, len(vehicles))
-    veh_accidented_id = vehicles[random_number]
-    for monitor_emergency_vehicle in monitor_emergency_vehicles_list:
-        if monitor_emergency_vehicle['veh_accidented_id'] == veh_accidented_id:
-            print('verify how to handle with that case')
-            return None
-    road_id_accidented = traci.vehicle.getRoadID(veh_accidented_id)
-    traci.edge.setMaxSpeed(road_id_accidented, MAX_SPEED_ROAD_ACCIDENTED)
-    # traci.vehicle.setSpeedMode(veh_accidented_id, 0)
+    while True:
+        random_number = random.randrange(0, len(vehicles))
+        veh_accidented_id = vehicles[random_number]
+        
+        accidented_road_id: str = traci.vehicle.getRoadID(veh_accidented_id)
+
+        # se veículo escolhido foi está em uma junção interna da rede (não valida)
+        if accidented_road_id.startswith(':'):
+            continue
+    
+        # se veículo escolhido foi um veículo de emergência
+        veh_accidented_type_id = traci.vehicle.getTypeID(veh_accidented_id)
+        if veh_accidented_type_id == 'emergency_emergency':
+            continue
+
+        # se veículo escolhido foi um já acidentado
+        vehicle_is_already_considered = any(emergency_vehicle['veh_accidented_id'] == veh_accidented_id
+                                            for emergency_vehicle in buffer_emergency_vehicles_on_the_way + buffer_emergency_vehicles_in_the_accident)
+
+        if not vehicle_is_already_considered:
+            break # Sai do loop se nenhuma das condições para continuar for verdadeira
+    
+    traci.edge.setMaxSpeed(accidented_road_id, MAX_SPEED_ROAD_ACCIDENTED)
     traci.vehicle.setSpeed(veh_accidented_id, 0)
-    traci.vehicle.highlight(veh_accidented_id, (0, 0, 255, 255))
+    traci.vehicle.highlight(veh_accidented_id, COLOR_HIGHLIGHT)
     emergency_route_id = f"rou_emergency_{traci.simulation.getTime()}"
     veh_emergency_id = f"veh_emergency_{traci.simulation.getTime()}"
     arrival_pos = traci.vehicle.getLanePosition(veh_accidented_id)
-    traci.route.add(routeID=emergency_route_id, edges=[hospital_pos, road_id_accidented])
+    traci.route.add(routeID=emergency_route_id, edges=[hospital_pos, accidented_road_id])
     traci.vehicle.add(
         vehID=veh_emergency_id,
         routeID=emergency_route_id,
@@ -145,10 +197,11 @@ def create_accident_and_call_emergency_vehicle(vehicles):
         arrivalPos='max',
         arrivalSpeed='current'
     )
-    monitor_emergency_vehicles_list.append({
+    traci.vehicle.setSpeedMode(veh_emergency_id, 0)
+    buffer_emergency_vehicles_on_the_way.append({
         'veh_accidented_id': veh_accidented_id,
         'veh_emergency_id':veh_emergency_id,
-        'emergency_route_id': road_id_accidented,
+        'accidented_road_id': accidented_road_id,
         'arrival_pos': arrival_pos,
         'hospital_pos': hospital_pos,
     })
@@ -168,9 +221,30 @@ def improve_traffic_for_emergency_vehicle(vehicles):
                 tls_id = tls[0]
                 vehicle_distance_to_tls = tls[2]
                 tls_state = tls[3]
-                if vehicle_distance_to_tls < 40:
+                if vehicle_distance_to_tls <= VEHICLE_DISTANCE_TO_TLS: 
                     if tls_state in ('g', 'G'):
-                        traci.trafficlight.setPhaseDuration(tls_id, 5)
+                        traci.trafficlight.setPhaseDuration(tls_id, TLJ_PHASE_GREEN_DURATION)
+                    else:
+                        traci.trafficlight.setPhaseDuration(tls_id, 0)
+                        # if not any(tls['tls_id'] == tls_id for tls in buffer_tls_on_red):
+                        #     buffer_tls_on_red.append({
+                        #         'tls_id': tls_id,
+                        #         'duration': TLJ_PHASE_RED_YELLOW_TO_GREEN_DURATION
+                        #     })
+                        #     traci.trafficlight.setPhaseDuration(tls_id, TLJ_PHASE_RED_YELLOW_TO_GREEN_DURATION)
+                        # else:
+                        #     for tls_on_red in buffer_tls_on_red:
+                        #         if tls_on_red == tls_id:
+                        #             duration = tls_on_red['duration']
+                        #             if duration > 0:
+                        #                 duration -= 1
+                        #                 buffer_tls_on_red.pop(tls_on_red)
+                        #                 buffer_tls_on_red.append({
+                        #                     'tls_id': tls_id,
+                        #                     'duration': duration
+                        #                 })
+                        #             else:
+                        #                 buffer_tls_on_red.pop(tls_on_red)
 
 
 def run():
@@ -184,13 +258,13 @@ def run():
     try:
         while shouldContinueSim():
             traci.simulationStep()
-            monitor_emergency_vehicles()
+            monitor_emergency_vehicles() # monitor emergency vehicles and handle them when they arrive at the accident
             vehicles = traci.vehicle.getIDList()
             if traci.simulation.getTime()%250 == 0:
                 create_accident_and_call_emergency_vehicle(vehicles)
             improve_traffic_on_accidented_road(vehicles) # reroute vehicles to avoid of the aciddented road
             improve_traffic_for_emergency_vehicle(vehicles) # green wave
-            # get_statistics_from_timeloss_and_halting(junctionID)    
+            # get_statistics_from_timeloss_and_halting(junctionID)
             step += 1
         # get_network_parameters()
         traci.close()

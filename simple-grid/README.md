@@ -2,31 +2,40 @@ Docs:
   - https://sumo.dlr.de/pydoc/
 
 Cenário:
-  - network grid, com carros, semáforos e Ponto A e Ponto B
-    - distancia eucl, manh e harvesine
-  - ocorrência de acidente (parada de carro/congestionamento no local/fechamento da via)
-    - dispara ambulância até o local e vai até o hospital mais próximo
-  - criação do algoritmo de liberação de sinal verde
-  - comparação entre cenários/features/níveis/...
-  - extensão da linha de pesquisa para n caminhos...
+  - [ ] network grid, com carros, semáforos e Ponto A e Ponto B
+    - [ ] distancia eucl, manh e harvesine
+  - [ ] ocorrência de acidente (parada de carro/congestionamento no local/fechamento da via)
+    - [ ] dispara ambulância até o local e vai até o hospital mais próximo
+  - [ ] criação do algoritmo de liberação de sinal verde
+  - [ ] comparação entre cenários/features/níveis/...
+  - [ ] extensão da linha de pesquisa para n caminhos...
 
   TODO
-  - article: Analysis and modelling of road traffic using SUMO tooptimize the arrival time of emergency vehicles
-   - pegar demanda de veículos de emergência/acidentes que ocorrem na base do samu
-   - pegar demanda de veículos de brasília
-   - focar em uma região de brasília, ex: Ceilândia
-   - melhorar cenario do acidente
-   - quando um VE se aproximar de um sinal, tornar ele verde (já está mantendo verde, precisa virar verde, se tiver vermelho ou amarelo)
-     - article: Modelling green waves for emergency vehicles usingconnected traffic data
-   - priorizacao do VE
-   - veiculos comuns priorizar veiculos de emergencia (dar passagem)
-   - limitar e parametrizar tempo de simulação
-   - criar hospitais parametrizavel
-   - parametrizar as váriaveis do cenário
-   - configurar parada do veículo de emergência no local do acidente
-   - customizar/alternar algoritmos de roteamento
-   - ajustar retorno dos veiculos na mesma via
-   - ajustar controle de sinais "gggyyyrrr"
+   - [ ] article: Analysis and modelling of road traffic using SUMO tooptimize the arrival time of emergency vehicles
+   - [ ] modelagem da demanda de veículos
+    - [ ] pegar demanda de veículos de emergência/acidentes que ocorrem na base do samu
+      - [ ] explicar possíveis impactos que cada variável pode causar no trânsito e no algoritmo.
+      - [ ] comparar estatisticas de:
+        - [ ] chamados que a samu recebe
+        - [ ] chamados que veículos de emergência sai na rua
+        - [ ] chamados que veículos de emergência sai na rua com acidente de trânsito
+        - [ ] no final: focar em uma região de brasília, ex: Ceilândia
+        - [ ] comparar com os dados dos relatórios do DETRAN/DF
+    - [ ] pegar demanda de veículos de brasília/ceilândia (verify)
+   - [ ] melhorar cenario do acidente
+    - [ ] envia veiculo de emergencia do bombeiro/policia para fazer o despacho do veiculo acidentado (novo cenário de acidente)
+    - [x~] quando um VE se aproximar de um sinal, tornar ele verde (já está mantendo verde, precisa virar verde, se tiver vermelho ou amarelo)
+     - [ ] article: Modelling green waves for emergency vehicles usingconnected traffic data
+      - [ ] priorizacao do VE
+      - [ ] veiculos comuns priorizar veiculos de emergencia (dar passagem) changelane
+      - [x] proibir retorno dos veiculos na mesma via
+   - [ ] limitar e parametrizar tempo de simulação
+   - [ ] criar hospitais parametrizavel
+   - [ ] parametrizar as váriaveis do cenário
+   - [x] configurar parada do veículo de emergência no local do acidente
+   - [ ] customizar/alternar algoritmos de roteamento
+   - [ ] Green-Wave Traffic Theory Optimization and Analysis
+   - [ ] implementar uma solução de escalonamento/prioridade no algoritmo do green-wave
 
 OBS:
 dados abertos sobre a malha rodoviária de brasília - https://geoservicos.detran.df.gov.br/geoserver/web/wicket/bookmarkable/org.geoserver.web.demo.MapPreviewPage;jsessionid=F08C73149B32FCDEF43E0E34F2F9A086?0&filter=false
@@ -35,12 +44,14 @@ dados abertos sobre a malha rodoviária de brasília - https://geoservicos.detra
 0.1 - $SUMO_HOME = "C:\Users\Alexandre Cury\miniconda3\envs\sumo-env\Lib\site-packages\sumo"
 0.2 - export SUMO_HOME="/home/acll/miniconda3/envs/sumo-env/lib/python3.11/site-packages/sumo"
 
-1 - netgenerate --grid --grid.number=4 --grid.length=150 --default.lanenumber 2 --default-junction-type traffic_light --output-file=road.net.xml
+1 - netgenerate --grid --grid.number=4 --grid.length=150 --default.lanenumber 2 --default-junction-type traffic_light --output-file=road.net.xml --no-turnarounds true 
 
 2 - python $SUMO_HOME/tools/randomTrips.py -n road.net.xml -r route.rou.xml --seed 42 --validate --fringe-factor 1000
 
 3 - add below code on first line into <routes> of the file route.rou.xml
-  "<vType id="emergency_emergency" vClass="emergency" color="red"/>"
+  <vType id="emergency_emergency" vClass="emergency" color="red" speedFactor="1.5">
+    <param key="has.bluelight.device" value="true"/>
+  </vType>
 
 4 - python main.py
 
